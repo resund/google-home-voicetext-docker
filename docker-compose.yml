@@ -1,12 +1,19 @@
 node-google-home:
-  build: './node'
-  container_name: 'node'
-  command: 'tail -f /dev/null'
-  working_dir: '/myapps/'
-  volumes:
-    - ./myapps/:/myapps/
+  build: './ghn'
+  container_name: 'ghn'
+  command: >
+    sh -c "service dbus start &&
+    service avahi-daemon start &&
+    node file-server.js &
+    node api-server.js "
+  working_dir: '/google-home-voicetext'
   ports:
     - '8080:8080'
     - '8888:8888'
   environment:
     - 'TZ=Asia/Tokyo'
+    - 'VOICETEXT_API_KEY=xxxxx'
+    - 'WIRELESS_IP=192.168.xxx.xxx'
+    - 'GOOGLE_HOME_IP=192.168.xxx.xxx'
+  tty: true
+  restart: always
